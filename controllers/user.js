@@ -26,6 +26,11 @@ exports.createUser = async (req, res, next) => {
       password: encryptedPassword,
     });
 
+    // create token
+    const token = jwt.sign({ user_id: user._id, email }, "token_key", {
+      expiresIn: "5h",
+    });
+
     user.token = token;
 
     res.status(201).json(user);
@@ -48,11 +53,9 @@ exports.loginUser = async (req, res, next) => {
 
     if (user && bcrypt.compare(password, user.password)) {
       // create token
-      const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.TOKEN_KEY,
-        { expiresIn: "5h" }
-      );
+      const token = jwt.sign({ user_id: user._id, email }, "token_key", {
+        expiresIn: "5h",
+      });
 
       user.token = token;
 
